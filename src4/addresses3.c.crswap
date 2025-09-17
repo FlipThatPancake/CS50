@@ -1,0 +1,10 @@
+// Stores and prints an integer via its address
+
+#include <stdio.h>
+
+int main(void)
+{
+    int n = 50; // declares variable, initializes it to value of 50
+    int *p = &n; // declares a pointer p and initializes it to value of address of n
+    printf("%i\n", *p); // prints the value at the address of n "50"
+}
