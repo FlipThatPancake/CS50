@@ -1,5 +1,5 @@
 #include "helpers.h"
-#include <math.h>
+#include <math.h> // for float and round
 #include <stdlib.h>  // for calloc and free
 
 // Convert image to grayscale
@@ -97,69 +97,78 @@ void blur(int height, int width, RGBTRIPLE image[height][width])
 // Detect edges using Sobel operator
 void edges(int height, int width, RGBTRIPLE image[height][width])
 {
-    // Sobel kernels
     int Gx[3][3] = {
         {-1, 0, 1},
         {-2, 0, 2},
         {-1, 0, 1}
     };
+
     int Gy[3][3] = {
         {-1, -2, -1},
         { 0,  0,  0},
         { 1,  2,  1}
     };
 
-    RGBTRIPLE(*copy)[width] = calloc(height, width * sizeof(RGBTRIPLE));
-    if (copy == NULL)
-    {
-        return;
-    }
+    // Create copy of image
+    // RGBTRIPLE(*copy)[width] = calloc(height, width * sizeof(RGBTRIPLE)); // manually allocate memory for 2D array
+    // (*copy) creates a pointer to an array, *copy[width] would create an array of pointers!!!
+    RGBTRIPLE (*copy)[width] = calloc(height, sizeof(*copy)); // let compiler allocate memory for the 2D array
+    if (copy == NULL) return;
 
+    // Loop through each pixel
     for (int i = 0; i < height; i++)
+    // i = 0
     {
         for (int j = 0; j < width; j++)
+        // j = 0
         {
             float gxRed = 0, gxGreen = 0, gxBlue = 0;
             float gyRed = 0, gyGreen = 0, gyBlue = 0;
 
-            for (int di = -1; di <= 1; di++)
+            // Check each neighbor in 3x3 box
+            for (int rowOffset = -1; rowOffset <= 1; rowOffset++)
+            // rowOffset = -1
             {
-                for (int dj = -1; dj <= 1; dj++)
+                for (int colOffset = -1; colOffset <= 1; colOffset++)
+                // colOffset = -1
                 {
-                    int ni = i + di;
-                    int nj = j + dj;
+                    int neighborRow = i + rowOffset; // -1
+                    int neighborCol = j + colOffset; // -1
 
-                    if (ni < 0 || ni >= height || nj < 0 || nj >= width)
+                    // Skip neighbors outside the image
+                    if (neighborRow < 0 || row >= height || neighborCol < 0 || neighborCol >= width)
                         continue;
 
-                    int kernelX = Gx[di + 1][dj + 1];
-                    int kernelY = Gy[di + 1][dj + 1];
+                    RGBTRIPLE neighbor = image[row][col]; // image[-1][-1]
 
-                    RGBTRIPLE pixel = image[ni][nj];
+                    // Adjust index for kernel grid positions
+                    int kernelRow = rowOffset + 1; // kernelRow = 0
+                    int kernelCol = colOffset + 1; // kernelCol = 0
 
-                    gxRed += kernelX * pixel.rgbtRed;
-                    gxGreen += kernelX * pixel.rgbtGreen;
-                    gxBlue += kernelX * pixel.rgbtBlue;
+                    // Multiply kernel cell value wand the RGB value of the neighbour pixel
+                    gxRed   += Gx[kernelRow][kernelCol] * neighbor.rgbtRed; // Gx[0][0] ("-1") * neighbor.rgbtRed ("255")
+                    gxGreen += Gx[kernelRow][kernelCol] * neighbor.rgbtGreen;
+                    gxBlue  += Gx[kernelRow][kernelCol] * neighbor.rgbtBlue;
 
-                    gyRed += kernelY * pixel.rgbtRed;
-                    gyGreen += kernelY * pixel.rgbtGreen;
-                    gyBlue += kernelY * pixel.rgbtBlue;
+                    gyRed   += Gy[kernelRow][kernelCol] * neighbor.rgbtRed;
+                    gyGreen += Gy[kernelRow][kernelCol] * neighbor.rgbtGreen;
+                    gyBlue  += Gy[kernelRow][kernelCol] * neighbor.rgbtBlue;
                 }
             }
 
-            // Compute final gradient magnitude
-            int finalRed = (int) round(sqrt(gxRed * gxRed + gyRed * gyRed));
-            int finalGreen = (int) round(sqrt(gxGreen * gxGreen + gyGreen * gyGreen));
-            int finalBlue = (int) round(sqrt(gxBlue * gxBlue + gyBlue * gyBlue));
+            // Compute gradient magnitude
+            int finalRed   = round(sqrt(gxRed * gxRed + gyRed * gyRed)); //
+            int finalGreen = round(sqrt(gxGreen * gxGreen + gyGreen * gyGreen));
+            int finalBlue  = round(sqrt(gxBlue * gxBlue + gyBlue * gyBlue));
 
-            // Cap values at 255
-            copy[i][j].rgbtRed = finalRed > 255 ? 255 : finalRed;
+            // Cap at 255
+            copy[i][j].rgbtRed   = finalRed > 255 ? 255 : finalRed;
             copy[i][j].rgbtGreen = finalGreen > 255 ? 255 : finalGreen;
-            copy[i][j].rgbtBlue = finalBlue > 255 ? 255 : finalBlue;
+            copy[i][j].rgbtBlue  = finalBlue > 255 ? 255 : finalBlue;
         }
     }
 
-    // Copy edge-detected results back into original image
+    // Copy results back to original image
     for (int i = 0; i < height; i++)
     {
         for (int j = 0; j < width; j++)
@@ -168,5 +177,7 @@ void edges(int height, int width, RGBTRIPLE image[height][width])
         }
     }
 
-    free(copy);
+    free(copy); // !!!!
 }
+
+
