@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     char *filters = "begr";
 
     // Get filter flag and check validity
-    char filter = getopt(argc, argv, filters);
+    char filter = getopt(argc, argv, filters); // finds first occurance of a member of filters in argv
     if (filter == '?')
     {
         printf("Invalid filter.\n");
@@ -18,14 +18,14 @@ int main(int argc, char *argv[])
     }
 
     // Ensure only one filter
-    if (getopt(argc, argv, filters) != -1)
+    if (getopt(argc, argv, filters) != -1) // if any occurance of filters found after first call of getopt in argv (that is not -1), error
     {
         printf("Only one filter allowed.\n");
         return 2;
     }
 
     // Ensure proper usage
-    if (argc != optind + 2)
+    if (argc != optind + 2) // optind points to input arg, optind + 1 to output, optind + 2 is always beyond the scope
     {
         printf("Usage: ./filter [flag] infile outfile\n");
         return 3;
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
     BITMAPINFOHEADER bi;
     fread(&bi, sizeof(BITMAPINFOHEADER), 1, inptr);
 
-    // Ensure infile is (likely) a 24-bit uncompressed BMP 4.0
+    // Check if infile is a 24-bit uncompressed BMP 4.0
     if (bf.bfType != 0x4d42 || bf.bfOffBits != 54 || bi.biSize != 40 ||
         bi.biBitCount != 24 || bi.biCompression != 0)
     {
@@ -86,6 +86,10 @@ int main(int argc, char *argv[])
 
     // Determine padding for scanlines
     int padding = (4 - (width * sizeof(RGBTRIPLE)) % 4) % 4;
+    // width * sizeof(RGBTRIPLE) is the actual size of the row
+    // remainder of % 4 gives us how much bigger the scanline is than the multiple of 4
+    // 4 - that remainder gives us the missing bytes
+    // if remiainder is 0, then the missing bytes are 4 which is wrong, so we do another modulo % 4 for that special case
 
     // Iterate over infile's scanlines
     for (int i = 0; i < height; i++)
