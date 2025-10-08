@@ -42,3 +42,27 @@ int main(void)
     }
     return 0;
 }
+
+
+void free_list(node *head)
+{
+    // head points to the start of the list
+    while (head != NULL)  // loop until we reach the end
+    {
+        node *temp = head;  // temp holds current node
+        head = head->next;  // move head to next node
+        free(temp);         // free memory for the current node
+        // After freeing temp, memory is gone. head now points to the next node
+    }
+    // At the end, head == NULL, all nodes freed
+}
+
+void free_memory(node *head)
+{
+    while (head != NULL)
+    {
+        node *next = head->next;  // save pointer to next node
+        free(head);               // free current node
+        head = next;              // move head to next node
+    }
+}
