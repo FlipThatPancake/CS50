@@ -40,7 +40,7 @@ int main(void)
         else if (n->number < list->number)
         {
             n->next = list;
-            list = n; 
+            list = n;
         }
 
         // If number belongs later in list
@@ -88,4 +88,73 @@ void unload(node *list)
         free(ptr);
         ptr = next;
     }
+}
+
+
+
+typedef struct node
+{
+    int number;
+    struct node *next;
+} node;
+
+void unload(node *head);
+
+int main(void)
+{
+    node *head = NULL;
+    for (int i = 0; i < 3; i++)
+    {
+        node *n = malloc(sizeof(node));
+        if (n == NULL)
+        {
+            unload(head);
+            return 1;
+        }
+        n->number = get_int("");
+        n->next = NULL;
+        if (head = NULL)
+        {
+            head = n;
+        }
+        else if (n->number < head->number)
+        {
+            n->next = head;
+            head = n;
+        }
+        else
+        {
+            for (node *ptr = head; ptr != NULL; ptr = ptr->next)
+            {
+                if (ptr->next = NULL)
+                {
+                    ptr->next = n;
+                    break;
+                }
+
+                if (n->number < ptr->next->number)
+                {
+                    n->next = ptr->next
+                    ptr->next = n;
+                    break;
+                }
+            }
+        }
+
+    }
+
+    for (node *ptr = head; ptr != NULL; ptr = ptr->next)
+    {
+        printf("%i\n", ptr->number);
+    }
+
+    unload(head);
+    return 0;
+}
+
+void unload(node *head)
+{
+    node *next = head->next;
+    free(head);
+    head = next;
 }
