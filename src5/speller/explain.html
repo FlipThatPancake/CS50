@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hash Table Visualization</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 18px;
+        }
+        .section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+        .section h2 {
+            color: #667eea;
+            margin-top: 0;
+        }
+        .hash-table {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+            align-items: flex-start;
+        }
+        .array-container {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .bucket {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .index-box {
+            width: 60px;
+            padding: 10px;
+            background: #667eea;
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .pointer-box {
+            width: 100px;
+            padding: 10px;
+            background: #e9ecef;
+            border: 2px solid #667eea;
+            text-align: center;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        .linked-list {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .node {
+            padding: 15px;
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            min-width: 80px;
+            text-align: center;
+        }
+        .node-word {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 5px;
+        }
+        .node-pointer {
+            font-size: 11px;
+            color: #666;
+            font-family: 'Courier New', monospace;
+        }
+        .arrow {
+            color: #667eea;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .null {
+            color: #dc3545;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        .comment {
+            color: #6a9955;
+        }
+        .keyword {
+            color: #569cd6;
+        }
+        .string {
+            color: #ce9178;
+        }
+        .number {
+            color: #b5cea8;
+        }
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        .example-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 2px solid #667eea;
+        }
+        .step {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: #28a745;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗂️ Understanding Hash Tables & Buckets</h1>
+        <p class="subtitle">A Visual Guide for CS50 Speller</p>
+
+        <!-- SECTION 1: What is an Index -->
+        <div class="section">
+            <h2>📍 What is a Hash Table Index?</h2>
+            <p>An <span class="highlight">index</span> is just a position number in an array. Think of it like apartment numbers in a building!</p>
+            
+            <div class="example-box">
+                <strong>Example: Regular Array</strong>
+                <div class="code-block">
+<span class="keyword">int</span> numbers[<span class="number">5</span>] = {<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>};
+<span class="comment">// Index:        0    1    2    3    4</span>
+<span class="comment">// numbers[2] means "get the value at index 2" → 30</span>
+                </div>
+                <p><strong>Index 0</strong> = first position, <strong>Index 1</strong> = second position, etc.</p>
+            </div>
+
+            <div class="example-box">
+                <strong>In Our Hash Table:</strong>
+                <div class="code-block">
+node *table[<span class="number">676</span>];  <span class="comment">// Array with 676 positions (indices 0-675)</span>
+<span class="comment">// table[0] → First bucket</span>
+<span class="comment">// table[1] → Second bucket</span>
+<span class="comment">// table[25] → 26th bucket</span>
+<span class="comment">// table[675] → Last bucket</span>
+                </div>
+                <p>Each index is a <span class="highlight">bucket</span> that can hold a linked list of words!</p>
+            </div>
+        </div>
+
+        <!-- SECTION 2: What is a Bucket -->
+        <div class="section">
+            <h2>🪣 What is a Bucket?</h2>
+            <p>A <span class="highlight">bucket</span> is just a spot in the array that holds a pointer to a linked list. Think of it like a mailbox slot!</p>
+            
+            <p><strong>Analogy:</strong> Imagine a wall of 676 mailboxes (buckets). Each mailbox can hold letters (words) attached together in a chain (linked list).</p>
+
+            <div style="text-align: center; margin: 20px 0;">
+                <div style="display: inline-block; text-align: left;">
+                    <div style="font-size: 40px; margin: 10px 0;">📬 📬 📬 📬 📬</div>
+                    <div style="font-size: 12px; color: #666;">↑ Each mailbox is a bucket (index in the array)</div>
+                    <div style="font-size: 12px; color: #666; margin-top: 5px;">↑ Letters inside = linked list of words</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: Visual Structure -->
+        <div class="section">
+            <h2>🏗️ How It's Built: The Structure</h2>
+            
+            <h3>Our Hash Table Array (676 buckets):</h3>
+            <div class="hash-table">
+                <div class="array-container">
+                    <div style="font-weight: bold; margin-bottom: 10px; color: #667eea;">table[] array:</div>
+                    
+                    <div class="bucket">
+                        <div class="index-box">0<br>("aa")</div>
+                        <div class="pointer-box">table[0]</div>
+                        <span class="arrow">→</span>
+                        <div class="linked-list">
+                            <div class="node">
+                                <div class="node-word">aardvark</div>
+                                <div class="node-pointer">next →</div>
+                            </div>
+                            <span class="arrow">→</span>
+                            <div class="node">
+                                <div class="node-word">aaron</div>
+                                <div class="node-pointer">next →</div>
+                            </div>
+                            <span class="arrow">→</span>
+                            <span class="null">NULL</span>
+                        </div>
+                    </div>
+
+                    <div class="bucket">
+                        <div class="index-box">1<br>("ab")</div>
+                        <div class="pointer-box">table[1]</div>
+                        <span class="arrow">→</span>
+                        <div class="linked-list">
+                            <div class="node">
+                                <div class="node-word">abbey</div>
+                                <div class="node-pointer">next →</div>
+                            </div>
+                            <span class="arrow">→</span>
+                            <span class="null">NULL</span>
+                        </div>
+                    </div>
+
+                    <div class="bucket">
+                        <div class="index-box">2<br>("ac")</div>
+                        <div class="pointer-box">table[2]</div>
+                        <span class="arrow">→</span>
+                        <span class="null">NULL</span>
+                        <span style="margin-left: 10px; color: #666;">(empty bucket)</span>
+                    </div>
+
+                    <div style="text-align: center; padding: 10px; color: #999;">⋮<br>(670 more buckets)<br>⋮</div>
+
+                    <div class="bucket">
+                        <div class="index-box">675<br>("zz")</div>
+                        <div class="pointer-box">table[675]</div>
+                        <span class="arrow">→</span>
+                        <div class="linked-list">
+                            <div class="node">
+                                <div class="node-word">zzzap</div>
+                                <div class="node-pointer">next →</div>
+                            </div>
+                            <span class="arrow">→</span>
+                            <span class="null">NULL</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <p style="margin-top: 20px;"><strong>Key Points:</strong></p>
+            <ul>
+                <li>Each <span class="highlight">blue box</span> is an <strong>index</strong> (position in array)</li>
+                <li>Each <span class="highlight">gray box</span> is a <strong>bucket</strong> (holds a pointer)</li>
+                <li>Each <span class="highlight">yellow box</span> is a <strong>node</strong> (stores one word)</li>
+                <li>Arrows (→) show how nodes link together in a <strong>linked list</strong></li>
+                <li>NULL means "end of the list" or "empty bucket"</li>
+            </ul>
+        </div>
+
+        <!-- SECTION 4: How Hashing Works -->
+        <div class="section">
+            <h2>🔢 How Words Get Their Bucket (Hashing)</h2>
+            
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>Take the first two letters of a word</strong>
+                <div class="code-block" style="margin-top: 10px;">
+Word: <span class="string">"apple"</span>
+First two letters: <span class="string">"ap"</span>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>Convert letters to numbers (A=0, B=1, C=2...)</strong>
+                <div class="code-block" style="margin-top: 10px;">
+<span class="string">"a"</span> → <span class="number">0</span>   (A is the 1st letter, so 0 in programming)
+<span class="string">"p"</span> → <span class="number">15</span>  (P is the 16th letter, so 15 in programming)
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>Calculate the index using formula: first * 26 + second</strong>
+                <div class="code-block" style="margin-top: 10px;">
+index = <span class="number">0</span> * <span class="number">26</span> + <span class="number">15</span> = <span class="number">15</span>
+
+<span class="comment">// So "apple" goes in bucket 15!</span>
+table[<span class="number">15</span>] → points to linked list with "apple", "apostrophe", "april", etc.
+                </div>
+            </div>
+
+            <h3 style="margin-top: 30px;">📊 More Examples:</h3>
+            <div class="example-box">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr style="background: #667eea; color: white;">
+                        <th style="padding: 10px; text-align: left;">Word</th>
+                        <th style="padding: 10px; text-align: left;">First 2 Letters</th>
+                        <th style="padding: 10px; text-align: left;">Calculation</th>
+                        <th style="padding: 10px; text-align: left;">Bucket Index</th>
+                    </tr>
+                    <tr style="background: #f8f9fa;">
+                        <td style="padding: 10px;"><strong>cat</strong></td>
+                        <td style="padding: 10px;">ca</td>
+                        <td style="padding: 10px;">2 * 26 + 0 = 52</td>
+                        <td style="padding: 10px; font-weight: bold; color: #667eea;">52</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px;"><strong>dog</strong></td>
+                        <td style="padding: 10px;">do</td>
+                        <td style="padding: 10px;">3 * 26 + 14 = 92</td>
+                        <td style="padding: 10px; font-weight: bold; color: #667eea;">92</td>
+                    </tr>
+                    <tr style="background: #f8f9fa;">
+                        <td style="padding: 10px;"><strong>hello</strong></td>
+                        <td style="padding: 10px;">he</td>
+                        <td style="padding: 10px;">7 * 26 + 4 = 186</td>
+                        <td style="padding: 10px; font-weight: bold; color: #667eea;">186</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px;"><strong>help</strong></td>
+                        <td style="padding: 10px;">he</td>
+                        <td style="padding: 10px;">7 * 26 + 4 = 186</td>
+                        <td style="padding: 10px; font-weight: bold; color: #667eea;">186 ⚠️ Same bucket!</td>
+                    </tr>
+                </table>
+            </div>
+            <p><strong>Notice:</strong> "hello" and "help" go in the same bucket (186) because they start with "he". This is why we need linked lists—to handle multiple words in the same bucket!</p>
+        </div>
+
+        <!-- SECTION 5: Why This Design -->
+        <div class="section">
+            <h2>💡 Why Use 676 Buckets?</h2>
+            <p><strong>26 letters × 26 letters = 676 combinations</strong></p>
+            <ul>
+                <li>aa, ab, ac... az (26 buckets starting with 'a')</li>
+                <li>ba, bb, bc... bz (26 buckets starting with 'b')</li>
+                <li>... and so on ...</li>
+                <li>za, zb, zc... zz (26 buckets starting with 'z')</li>
+            </ul>
+            <p><strong>Benefits:</strong></p>
+            <ul>
+                <li>✅ Spreads words evenly across buckets</li>
+                <li>✅ Each linked list stays relatively short</li>
+                <li>✅ Fast lookups—only search one small list instead of entire dictionary!</li>
+            </ul>
+
+            <div class="example-box">
+                <strong>Comparison:</strong>
+                <table style="width: 100%; margin-top: 10px;">
+                    <tr>
+                        <td style="padding: 10px; background: #fff3cd;"><strong>Without hash table:</strong><br>Search through 143,091 words one by one 😰</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; background: #d4edda; margin-top: 10px;"><strong>With hash table:</strong><br>Jump to correct bucket, search ~200 words 🚀</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- SECTION 6: Code Walkthrough -->
+        <div class="section">
+            <h2>💻 Putting It All Together in Code</h2>
+            
+            <div class="code-block">
+<span class="comment">// 1. Declare the hash table (676 buckets, all initially NULL)</span>
+node *table[<span class="number">676</span>];
+
+<span class="comment">// 2. Hash function determines which bucket</span>
+<span class="keyword">unsigned int</span> hash(<span class="keyword">const char</span> *word)
+{
+    <span class="keyword">unsigned int</span> index = toupper(word[<span class="number">0</span>]) - <span class="string">'A'</span>;  <span class="comment">// First letter</span>
+    <span class="keyword">if</span> (word[<span class="number">1</span>] != <span class="string">'\0'</span>)
+    {
+        index = index * <span class="number">26</span> + (toupper(word[<span class="number">1</span>]) - <span class="string">'A'</span>);  <span class="comment">// Second letter</span>
+    }
+    <span class="keyword">return</span> index % <span class="number">676</span>;  <span class="comment">// Make sure it's 0-675</span>
+}
+
+<span class="comment">// 3. Loading a word into the hash table</span>
+<span class="keyword">unsigned int</span> index = hash(<span class="string">"apple"</span>);  <span class="comment">// Returns 15</span>
+node *new_node = malloc(<span class="keyword">sizeof</span>(node));
+strcpy(new_node->word, <span class="string">"apple"</span>);
+new_node->next = table[index];  <span class="comment">// Point to current first node</span>
+table[index] = new_node;         <span class="comment">// Make this the new first node</span>
+
+<span class="comment">// 4. Checking if a word exists</span>
+<span class="keyword">unsigned int</span> index = hash(<span class="string">"apple"</span>);  <span class="comment">// Go to bucket 15</span>
+node *cursor = table[index];        <span class="comment">// Start at first node in bucket</span>
+<span class="keyword">while</span> (cursor != <span class="keyword">NULL</span>)              <span class="comment">// Walk through linked list</span>
+{
+    <span class="keyword">if</span> (strcasecmp(cursor->word, <span class="string">"apple"</span>) == <span class="number">0</span>)
+        <span class="keyword">return true</span>;              <span class="comment">// Found it!</span>
+    cursor = cursor->next;          <span class="comment">// Move to next node</span>
+}
+<span class="keyword">return false</span>;                      <span class="comment">// Not found</span>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px; padding: 20px; background: #d4edda; border-radius: 10px;">
+            <h3 style="color: #155724; margin-top: 0;">🎓 Quick Summary</h3>
+            <p style="font-size: 16px; line-height: 1.6; color: #155724;">
+                <strong>Index</strong> = position in array (0, 1, 2, ... 675)<br>
+                <strong>Bucket</strong> = that position holds a pointer to a linked list<br>
+                <strong>Hash function</strong> = calculates which bucket a word goes in<br>
+                <strong>Linked list</strong> = handles multiple words in the same bucket
+            </p>
+        </div>
+    </div>
+</body>
+</html>
